@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define MAX_ARRAY_SIZE			13	/* prime number */
-#define MAX_HASH_TABLE_SIZE 	MAX_ARRAY_SIZE
+#define MAX_ARRAY_SIZE			13	/* prime number */	
+#define MAX_HASH_TABLE_SIZE 	MAX_ARRAY_SIZE	//충돌을 줄이기 위해, hash table의 크기를 소수로 설정 
 
 /* 필요에 따라 함수 추가 가능 */
 int initialize(int **a);
@@ -31,7 +31,7 @@ int quickSort(int *a, int n);
 /* hash code generator, key % MAX_HASH_TABLE_SIZE */
 int hashCode(int key);
 
-/* array a에대 한 hash table을 만든다. */
+/* array a에 대한 hash table을 만든다. */
 int hashing(int *a, int **ht);
 
 /* hash table에서 key를 찾아 hash table의 index return */
@@ -95,7 +95,7 @@ int main()
 		case 'h': case 'H':
 			printf("Hashing: \n");
 			printf("----------------------------------------------------------------\n");
-			printArray(array);
+			printArray(array);	
 			hashing(array, &hashtable);
 			printArray(hashtable);
 			break;
@@ -335,72 +335,81 @@ int quickSort(int *a, int n)	//오름차순
 	return 0;
 }
 
-// 제산함수 이용(module 이용)
+/* hash code generator, key % MAX_HASH_TABLE_SIZE */ 
+/* 해시 함수로, division 함수 이용 
+	-> division 함수: 키 값이 음이 아닌 정수라고 가정하고, 
+	home bucket은 모드(%) 연산자에 의해 결정하여 key를 MAX_HASH_TABLE_SIZE로 나눈 나머지를 key의 home bucket으로 사용 */
 int hashCode(int key) {
-   return key % MAX_HASH_TABLE_SIZE;
+   return key % MAX_HASH_TABLE_SIZE;	
 }
 
+/* array a에 대한 hash table을 만든다. */
 int hashing(int *a, int **ht)
 {
 	int *hashtable = NULL;
 
 	/* hash table이 NULL인 경우 메모리 할당 */
 	if(*ht == NULL) {
-		hashtable = (int*)malloc(sizeof(int) * MAX_ARRAY_SIZE);
+		hashtable = (int*)malloc(sizeof(int) * MAX_ARRAY_SIZE);	//배열array의 크기만큼 메모리 할당 
 		*ht = hashtable;  /* 할당된 메모리의 주소를 복사 --> main에서 배열을 control 할수 있도록 함*/
 	} else {
 		hashtable = *ht;	/* hash table이 NULL이 아닌경우, table 재활용, reset to -1 */
 	}
 
 	for(int i = 0; i < MAX_HASH_TABLE_SIZE; i++)
-		hashtable[i] = -1;
+		hashtable[i] = -1;	//hashtable의 각각의 주소를 -1로 초기화    ///Q??
 
 	/*
 	for(int i = 0; i < MAX_HASH_TABLE_SIZE; i++)
-		printf("hashtable[%d] = %d\n", i, hashtable[i]);
+		printf("hashtable[%d] = %d\n", i, hashtable[i]);	//hashtable 초기값 출력  
 	*/
 
 	int key = -1;
 	int hashcode = -1;
 	int index = -1;
-	for (int i = 0; i < MAX_ARRAY_SIZE; i++)
+	for (int i = 0; i < MAX_ARRAY_SIZE; i++)	//배열의 크기만큼 반복
 	{
 		key = a[i];
 		hashcode = hashCode(key);
 		/*
 		printf("key = %d, hashcode = %d, hashtable[%d]=%d\n", key, hashcode, hashcode, hashtable[hashcode]);
 		*/
-		if (hashtable[hashcode] == -1)
+		if (hashtable[hashcode] == -1)	//hashtable의 hashcode위치의 값이 -1로, 즉 재설정된 적이 없는 경우 -> key를 대입함
 		{
-			hashtable[hashcode] = key;
-		} else 	{
+			hashtable[hashcode] = key;	
+		} else 	{						//hashtale의 hashcode위치의 값이 -1이 아닌, 즉 재설정된 적이 있는 경우
 
-			index = hashcode;
+			index = hashcode;	//index를 hashcode로 설정 
 
-			while(hashtable[index] != -1)
+			while(hashtable[index] != -1)		//hashtable의 index값이 -1이 아닌경우에만 반복
 			{
-				index = (++index) % MAX_HASH_TABLE_SIZE;
+				index = (++index) % MAX_HASH_TABLE_SIZE;	//index에 1 증가시킨 값을 나머지연산한 결과값을 index로 설정 
 				/*
 				printf("index = %d\n", index);
 				*/
 			}
-			hashtable[index] = key;
+			//hashtable의 index값이 -1인 경우 -> hashtable의 index 위치의 값을 key로 설정 
+			hashtable[index] = key;	
 		}
 	}
 
 	return 0;
 }
 
+
+/* hash table에서 key를 찾아 hash table의 index return 
+	-> 입력된 key의 위치를 hash table에서 찾아, 주소 return */
 int search(int *ht, int key)
 {
-	int index = hashCode(key);
+	int index = hashCode(key);	//index는 key의 home bucket 정보를 저장하는 변수
 
-	if(ht[index] == key)
+	if(ht[index] == key)	//hash table의 index 위치의 값이 key와 동일한 경우 -> index 반환
 		return index;
 
-	while(ht[++index] != key)
+	//hash table의 index위치의 값이 key와 동일하지 않은 경우 
+	while(ht[++index] != key)	//index를 1증가한 위치에서의 hashtable의 값이 key와 동일하지 않는 동안 반복
 	{
-		index = index % MAX_HASH_TABLE_SIZE;
+		index = index % MAX_HASH_TABLE_SIZE;	//나머지 연산 실행한 값으로 index 재설정 
 	}
-	return index;
+	return index;	//index 반환 
 }
