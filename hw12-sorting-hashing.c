@@ -95,21 +95,21 @@ int main()
 		case 'h': case 'H':
 			printf("Hashing: \n");
 			printf("----------------------------------------------------------------\n");
-			printArray(array);	
-			hashing(array, &hashtable);
-			printArray(hashtable);
+			printArray(array);			//배열 출력	
+			hashing(array, &hashtable);	//hashing 함수 호출 
+			printArray(hashtable); 		//hashtable 출력
 			break;
 
 		case 'e': case 'E':
 			printf("Your Key = ");
-			scanf("%d", &key);
-			printArray(hashtable);
-			index = search(hashtable, key);
-			printf("key = %d, index = %d,  hashtable[%d] = %d\n", key, index, index, hashtable[index]);
+			scanf("%d", &key);		//key 입력
+			printArray(hashtable);	//hashtable 출력
+			index = search(hashtable, key);	//hashtable에서 입력한 key에 대한 주소를 index에 대입
+			printf("key = %d, index = %d,  hashtable[%d] = %d\n", key, index, index, hashtable[index]);	//관련 정보 출력
 			break;
 
 		case 'p': case 'P':
-			printArray(array);
+			printArray(array);		//배열 출력
 			break;
 		default:
 			printf("\n       >>>>>   Concentration!!   <<<<<     \n");
@@ -211,14 +211,14 @@ int insertionSort(int *a)
 
 	for(i = 1; i < MAX_ARRAY_SIZE; i++)	//배열의 첫번째 원소, a[0]은 정렬되어 있다고 본다 -> 비정렬된 원소의 위치는 인덱스 1번부터 본다
 	{
-		t = a[i];	//정렬할 배열값(비정렬된 집합의 첫번째 원소)를 t에 복사 
+		t = a[i];			//정렬할 배열값(비정렬된 집합의 첫번째 원소)를 t에 복사 
 		j = i;
-		while (a[j-1] > t && j > 0)	//정렬된 집합의 원소가 비정렬된 원소t보다 크고, j>0일 때 반복된다.
+		while (a[j-1] > t && j > 0)		//정렬된 집합의 원소가 비정렬된 원소t보다 크고, j>0일 때 반복된다.
 		{
 			a[j] = a[j-1];	//a[j]에 a[j-1] 복사 -> a[j-1]위치가 비어있다고 생각한다
-			j--;	//j를 1씩 감소하며, 삽입할 위치를 찾는다
+			j--;			//j를 1씩 감소하며, 삽입할 위치를 찾는다
 		}
-		a[j] = t;	//삽입할 위치를 찾았으므로, a[j]에 t를 삽입한다
+		a[j] = t;			//삽입할 위치를 찾았으므로, a[j]에 t를 삽입한다
 	}
 
 	printf("----------------------------------------------------------------\n");
@@ -357,11 +357,10 @@ int hashing(int *a, int **ht)
 	}
 
 	for(int i = 0; i < MAX_HASH_TABLE_SIZE; i++)
-		hashtable[i] = -1;	//hashtable의 각각의 주소를 -1로 초기화    ///Q??
-
+		hashtable[i] = -1;	//hash table의 각각의 위치의 값을 -1로 초기화 
 	/*
 	for(int i = 0; i < MAX_HASH_TABLE_SIZE; i++)
-		printf("hashtable[%d] = %d\n", i, hashtable[i]);	//hashtable 초기값 출력  
+		printf("hashtable[%d] = %d\n", i, hashtable[i]);	//hash table 초기값 출력  
 	*/
 
 	int key = -1;
@@ -369,26 +368,26 @@ int hashing(int *a, int **ht)
 	int index = -1;
 	for (int i = 0; i < MAX_ARRAY_SIZE; i++)	//배열의 크기만큼 반복
 	{
-		key = a[i];
-		hashcode = hashCode(key);
+		key = a[i];					//key를 a[i]로 설정 
+		hashcode = hashCode(key);	//key에 대한 home bucket을 hashcode에 대입 
 		/*
 		printf("key = %d, hashcode = %d, hashtable[%d]=%d\n", key, hashcode, hashcode, hashtable[hashcode]);
 		*/
-		if (hashtable[hashcode] == -1)	//hashtable의 hashcode위치의 값이 -1로, 즉 재설정된 적이 없는 경우 -> key를 대입함
+		if (hashtable[hashcode] == -1)	//hashtable의 hashcode위치의 값이 -1로, 해당 home bucket에 값을 저장할 수 있는 경우(=home bucket이 비어있는 경우)-> key를 대입함
 		{
 			hashtable[hashcode] = key;	
-		} else 	{						//hashtale의 hashcode위치의 값이 -1이 아닌, 즉 재설정된 적이 있는 경우
+		} else 	{						//hashtale의 hashcode위치의 값이 -1이 아닌, 즉 key에 대한 home bucket이 정해진 적이 있는 경우(collision & overflow 발생한 경우 )
 
-			index = hashcode;	//index를 hashcode로 설정 
+			index = hashcode;			//index를 hashcode로 설정 
 
-			while(hashtable[index] != -1)		//hashtable의 index값이 -1이 아닌경우에만 반복
+			while(hashtable[index] != -1)		//collision & overflow가 발생하는 동안 반복
 			{
-				index = (++index) % MAX_HASH_TABLE_SIZE;	//index에 1 증가시킨 값을 나머지연산한 결과값을 index로 설정 
+				index = (++index) % MAX_HASH_TABLE_SIZE;	//index에 1 증가시킨 값을 나머지연산한 결과값을 index로 설정(빈 home bucket을 찾는 과정)
 				/*
 				printf("index = %d\n", index);
 				*/
 			}
-			//hashtable의 index값이 -1인 경우 -> hashtable의 index 위치의 값을 key로 설정 
+			//hashtable의 index값이 -1인 경우(해당 home bucket이 비어있는 경우) -> hashtable의 index 위치의 값을 key로 설정 
 			hashtable[index] = key;	
 		}
 	}
@@ -403,13 +402,14 @@ int search(int *ht, int key)
 {
 	int index = hashCode(key);	//index는 key의 home bucket 정보를 저장하는 변수
 
-	if(ht[index] == key)	//hash table의 index 위치의 값이 key와 동일한 경우 -> index 반환
+	if(ht[index] == key)	//해당 key값이 hash table의 index위치에 저장된 경우  -> key의 주소인 index 반환
 		return index;
 
-	//hash table의 index위치의 값이 key와 동일하지 않은 경우 
-	while(ht[++index] != key)	//index를 1증가한 위치에서의 hashtable의 값이 key와 동일하지 않는 동안 반복
+	// 해당 key값이 hash table의 index위치에 저장되지 않은  경우(collsion & overflow로 다른 위치에 저장됨) -> 해당 key가 저장된 곳을 찾아야 함 
+	while(ht[++index] != key)	//index를 1증가한 위치에서의 hash table의 값이 key와 동일하지 않는 동안 반복
 	{
-		index = index % MAX_HASH_TABLE_SIZE;	//나머지 연산 실행한 값으로 index 재설정 
+		index = index % MAX_HASH_TABLE_SIZE;	//나머지 연산의 결과값으로 index 재설정 
 	}
-	return index;	//index 반환 
+	//해당 key값이 저장된 home bucket의 주소 index 반환 
+	return index;	
 }
