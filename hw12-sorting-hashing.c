@@ -65,7 +65,7 @@ int main()
 
 		switch(command) {
 		case 'z': case 'Z':
-			initialize(&array);	//single pointer의 주소를 인자로 사용
+			initialize(&array);	//배열의 주소를 인자로 사용
 			break;
 		case 'q': case 'Q':
 			freeArray(array);
@@ -89,7 +89,6 @@ int main()
 			quickSort(array, MAX_ARRAY_SIZE);
 			printf("----------------------------------------------------------------\n");
 			printArray(array);	//정렬 후 배열array 출력
-
 			break;
 
 		case 'h': case 'H':
@@ -121,6 +120,7 @@ int main()
 	return 1;
 }
 
+
 /* 배열 array 초기화 */
 int initialize(int** a)	//double pointer 사용-> 배열 array의 주소, 즉 *a를 변경하겠다는 의미 
 {
@@ -140,6 +140,7 @@ int initialize(int** a)	//double pointer 사용-> 배열 array의 주소, 즉 *a
 	return 0;
 }
 
+
 /* 배열 메모리 해제 */
 int freeArray(int *a) 
 {
@@ -147,6 +148,7 @@ int freeArray(int *a)
 		free(a);
 	return 0;
 }
+
 
 /* 배열 출력 함수 */
 void printArray(int *a)	
@@ -163,6 +165,7 @@ void printArray(int *a)
 		printf("%5d ", a[i]);		//배열의 해당 인덱스 값 출력
 	printf("\n");
 }
+
 
 /* 선택 정렬 
 	-> 정렬되어 있지 않은 부분에서 최솟값을 찾는 과정을 반복하여 정렬-> 앞에서부터 정렬*/
@@ -198,6 +201,7 @@ int selectionSort(int *a)
 	return 0;
 }
 
+
 /* 삽입 정렬 
 	-> 정렬되어 있는 부분집합에 새로운 원소의 위치를 찾아 삽입 */
 int insertionSort(int *a)
@@ -226,6 +230,7 @@ int insertionSort(int *a)
 
 	return 0;
 }
+
 
 /* 버블 정렬 
 	-> 두 인접원소를 검사하여 정렬하는 방법으로, 최대값을 비정렬된 부분 중 제일 뒤로 보내는 것을 반복한다(뒤에서부 정렬)*/
@@ -258,6 +263,7 @@ int bubbleSort(int *a)
 	return 0;
 }
 
+
 /* 쉘 정렬 
 	-> insertion sort의 문제점 보완하기 위한 정렬로, h만큼의 간격으로 떨어진 레코드를 삽입 정렬하는 정렬
 	insertion sort의 문제점: 정렬되기 위해 비교와 교환횟수가 많음*/
@@ -271,21 +277,23 @@ int shellSort(int *a)
 	printArray(a);	//정렬 전 배열 array 출력
 
 	/* h는 부분집합의 기준이 되는 간격을 의미한다 */
-	//h를 배열크기의 1/2로 초기화하고, 단계가 수행될 때마다 h를 1/2씩 줄이고, h가 1이 될 때까지 반복한다.
+	//h를 배열크기의 1/2로 초기화하고, 단계가 수행될 때마다 h를 1/2씩 줄이고, h가 1이 될 때까지 아래의 과정을 반복한다.
 	for (h = MAX_ARRAY_SIZE/2; h > 0; h /= 2)	
 	{
 		for (i = 0; i < h; i++)	//h번 반복 
 		{
-			for(j = i + h; j < MAX_ARRAY_SIZE; j += h)	//비교할 원소 지정(i+h)
+			for(j = i + h; j < MAX_ARRAY_SIZE; j += h)	//비교할 원소 지정(i+h) -> 반복할 때마다 j를 h간격만큼 띈 원소의 인덱스로 지정
 			{
-				v = a[j];	
-				k = j;
-				while (k > h-1 && a[k-h] > v)	//k>h-1이고 k와 h간격만큼 앞에 위치한 배열값과 v 비교시, v가 더 작은 경우 -> a[k-h]가 v(=a[k])로 이동 
+				v = a[j];	//v를 j위치의 배열값으로 지정
+				k = j;		//k를 j로 지정 
+				/* 해당 간격h만큼 띄어져있는 원소들 중 k는 처음 위치의 원소가 아니고(간격마다 띄어져있는 원소들 중 첫번째 원소들은 정렬되어있다고 봄),
+					+ 현재위치의 값v보다 h간격 앞에 위치한 배열값이 클 경우 -> 정렬 필요 */
+				while (k > h-1 && a[k-h] > v)	
 				{
 					a[k] = a[k-h];	
 					k -= h;		//k를 h간격만큼 왼쪽으로 이동 
 				}
-				//k<=h-1 || a[k-h]<=v 일 때, a[k]를 v로 설정 
+				//k<=h-1(k가 해당 간격h만큼 띄어져있는 원소들 중 첫번째 원소일 때) || 현재위치의 값v가 h간격 앞에 위치한 값보다 크거나 같을 때, a[k]를 v로 설정 
 				a[k] = v;
 			}
 		}
@@ -295,6 +303,7 @@ int shellSort(int *a)
 
 	return 0;
 }
+
 
 /* 퀵 정렬
 	-> 기준값(pivot)을 중심으로 왼쪽 부분집합과 오른쪽 부분집합으로 분할하며 정렬 */
@@ -335,6 +344,7 @@ int quickSort(int *a, int n)	//오름차순
 	return 0;
 }
 
+
 /* hash code generator, key % MAX_HASH_TABLE_SIZE */ 
 /* 해시 함수로, division 함수 이용 
 	-> division 함수: 키 값이 음이 아닌 정수라고 가정하고, 
@@ -342,6 +352,7 @@ int quickSort(int *a, int n)	//오름차순
 int hashCode(int key) {
    return key % MAX_HASH_TABLE_SIZE;	
 }
+
 
 /* array a에 대한 hash table을 만든다. */
 int hashing(int *a, int **ht)
@@ -371,7 +382,7 @@ int hashing(int *a, int **ht)
 		key = a[i];					//key를 a[i]로 설정 
 		hashcode = hashCode(key);	//key에 대한 home bucket을 hashcode에 대입 
 		/*
-		printf("key = %d, hashcode = %d, hashtable[%d]=%d\n", key, hashcode, hashcode, hashtable[hashcode]);
+		printf("key = %d, hashcode = %d, hashtable[%d]=%d\n", key, hashcode, hashcode, hashtable[hashcode]);	//출력 
 		*/
 		if (hashtable[hashcode] == -1)	//hashtable의 hashcode위치의 값이 -1로, 해당 home bucket에 값을 저장할 수 있는 경우(=home bucket이 비어있는 경우)-> key를 대입함
 		{
